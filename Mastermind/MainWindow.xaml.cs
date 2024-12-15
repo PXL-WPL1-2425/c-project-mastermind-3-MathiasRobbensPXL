@@ -557,6 +557,98 @@ namespace Mastermind
 
 
         }
-    }
 
+        private void hintButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+            if (score >= 15)
+            {
+                
+                string hintChoice = Interaction.InputBox("Kies je hint: \n\n1. Juiste kleur \n2. Juiste kleur op juiste plaats",
+                                                        "Kies een hint",
+                                                        "1",  
+                                                        0, 0);
+
+                if (hintChoice == "1")
+                {
+                    if (score >= 15) //check voor genoeg punten
+                    {
+                        score -= 15;
+                        MessageBox.Show("De geheime kleur bevat een van de volgende kleuren: " + GetCorrectColorHint(), "Juiste Kleur Hint", MessageBoxButton.OK);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Je hebt niet genoeg punten om deze hint te kopen.", "Fout");
+                    }
+                }
+                else if (hintChoice == "2")
+                {
+                    if (score >= 25) //check voor genoeg punten
+                    {
+                        score -= 25;
+                        MessageBox.Show("Een van de kleuren in de juiste volgorde is: " + GetCorrectColorPositionHint(), "Juiste Kleur op Juiste Plaats Hint", MessageBoxButton.OK);
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Je hebt niet genoeg punten om deze hint te kopen.", "Fout");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Ongeldige keuze. Probeer opnieuw.", "Fout");
+                }
+
+                
+                scoreLabel.Content = $"Score: {score}"; //update score
+            }
+            else
+            {
+                MessageBox.Show("Niet genoeg punten. 15 punten of meer nodig.");
+            }
+           
+        }
+        
+        private string GetCorrectColorHint()
+        {
+            
+            List<string> possibleColors = new List<string>();
+            foreach (var color in chosenColors)
+            {
+                if (!possibleColors.Contains(color)) //geen duplicates
+                {
+                    possibleColors.Add(color);
+                }
+            }
+
+            
+            Random random = new Random();
+            return possibleColors[random.Next(possibleColors.Count)];
+        }
+
+       
+        private string GetCorrectColorPositionHint()
+        {
+            
+            List<int> correctPositionIndexes = new List<int>();
+            for (int i = 0; i < chosenColors.Count; i++)
+            {
+                //controleer dat de kleur in de juiste positie staat
+                if (comboBox1.SelectedItem?.ToString() == chosenColors[i])
+                {
+                    correctPositionIndexes.Add(i);
+                }
+            }
+
+            
+            Random random = new Random();
+            int randomIndex = correctPositionIndexes[random.Next(correctPositionIndexes.Count)];
+
+            return $"Positie {randomIndex + 1}: {chosenColors[randomIndex]}"; 
+        }
+
+
+    }
 }
+
+

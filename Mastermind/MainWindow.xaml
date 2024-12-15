@@ -32,6 +32,7 @@
         <Label Name="timerLabel" Content="" HorizontalAlignment="Left" Margin="58,19,0,0" VerticalAlignment="Top" Width="116"/>
         <ListBox Name="attemptsListBox" Margin="242,303,242,0"/>
         <Label Name="scoreLabel" Content="Score: 100" HorizontalAlignment="Left" Margin="613,269,0,0" VerticalAlignment="Top" Width="142"/>
+        <Button Name="hintButton" Content="Hint" HorizontalAlignment="Left" Margin="613,303,0,0" VerticalAlignment="Top" Width="71" Click="hintButton_Click"/>
 
     </Grid>
 </Window>
