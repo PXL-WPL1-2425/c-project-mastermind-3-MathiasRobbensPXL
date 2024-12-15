@@ -39,7 +39,7 @@ namespace Mastermind
         //aanmaken van variabele van attempts
         private int attempts = 1;
         private int maxAttempts = 10;
-        string username;
+        string playerName;
 
         private List<string> feedbackList = new List<string>();
 
@@ -69,10 +69,33 @@ namespace Mastermind
         }
         private void StartGame()
         {
+            List<string> players = new List<string>();
+           
             do
             {
-                username = Interaction.InputBox($"Welkom, Geef uw naam.", "Welkom");
-            } while (string.IsNullOrEmpty(username));
+                playerName = Interaction.InputBox($"Welkom, Geef uw naam.", "Welkom");
+
+                if (!string.IsNullOrEmpty(playerName))
+                {
+                    players.Add(playerName); // add player in de List
+                }
+                else
+                {
+                    MessageBox.Show("Naam mag niet leeg zijn. Probeer opnieuw");
+                }
+
+                if(players.Count < 4)//Controle op minder dan 4 spelers
+                {
+                    var result = MessageBox.Show("Wil je nog een speler toevoegen?", "Nieuwe speler", MessageBoxButton.YesNo);
+                    if (result == MessageBoxResult.No)
+                    {
+                        break; // stoppen als de gebruiker nee zegt
+                    }
+                }
+                
+            } while (players.Count < 4); //blijven vragen tot er 4 spelers zijn
+
+            MessageBox.Show($"Er zijn {players.Count} spelers toegevoegd.");
         }
         // Methode om de countdown timer te starten (of opnieuw te starten)
         /// <summary>
@@ -397,7 +420,7 @@ namespace Mastermind
         private void EndGame()
         {
             //speler zijn naam, score en attempts in de lijst toevoegen
-            highScores.Add(new Tuple<string, int, int>(username, score, attemptCount));
+            highScores.Add(new Tuple<string, int, int>(playerName, score, attemptCount));
 
             //Dit heb ik moeten opzoeken, ordered eerst door score (Item 2), als de score gelijk is dan ordered hij door attampts(Item 3)
             highScores = highScores.OrderByDescending(x => x.Item2).ThenBy(x => x.Item3).ToList();
