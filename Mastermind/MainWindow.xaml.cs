@@ -99,7 +99,8 @@ namespace Mastermind
                 }
                 
             } while (players.Count < 4); //blijven vragen tot er 4 spelers zijn
-            
+
+            Title = $"Mastermind - {players[currentPlayerIndex]} - Poging {attempts} van {maxAttempts}";
             MessageBox.Show($"Er zijn {players.Count} spelers toegevoegd.");
            
         }
@@ -405,6 +406,7 @@ namespace Mastermind
           
                 EndGame();
             }
+            Title = $"Mastermind - {players[currentPlayerIndex]} - Poging {attempts} van {maxAttempts}";
         }
         private void GenerateNewCode()
         {
@@ -458,7 +460,7 @@ namespace Mastermind
             }
             else
             {
-                
+                Title = $"Mastermind - {players[currentPlayerIndex]} - Poging {attempts} van {maxAttempts}";
                 MessageBox.Show($"Het is de beurt van {players[currentPlayerIndex]}", "Volgende Speler", MessageBoxButton.OK);
                 ResetGame();
             }
