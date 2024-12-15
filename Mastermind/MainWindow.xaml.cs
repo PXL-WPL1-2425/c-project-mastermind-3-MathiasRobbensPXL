@@ -41,12 +41,17 @@ namespace Mastermind
         private int maxAttempts = 10;
         string playerName;
 
+        List<string> players = new List<string>();
+        private int currentPlayerIndex = 0;
+
         private List<string> feedbackList = new List<string>();
 
         private Random random = new Random();
 
         // Variabele voor de kleurcode die we willen tonen in de titel
         private string colorCodeString = "";
+
+
 
 
 
@@ -69,8 +74,8 @@ namespace Mastermind
         }
         private void StartGame()
         {
-            List<string> players = new List<string>();
-           
+            players.Clear();
+
             do
             {
                 playerName = Interaction.InputBox($"Welkom, Geef uw naam.", "Welkom");
@@ -94,8 +99,9 @@ namespace Mastermind
                 }
                 
             } while (players.Count < 4); //blijven vragen tot er 4 spelers zijn
-
+            
             MessageBox.Show($"Er zijn {players.Count} spelers toegevoegd.");
+           
         }
         // Methode om de countdown timer te starten (of opnieuw te starten)
         /// <summary>
@@ -125,8 +131,6 @@ namespace Mastermind
             }
             else
             {
-                
-                MessageBox.Show($"Je hebt het maximale aantal pogingen bereikt. De geheime code was: {string.Join(", ", chosenColors)}");
                 EndGame();
             }
 
@@ -198,7 +202,7 @@ namespace Mastermind
             //titel updaten met de code
             colorCodeString = string.Join(",", chosenColors);
 
-            Title = $"Mastermind - Poging {attempts}";
+            
 
             startCountdown();
         }
@@ -271,6 +275,8 @@ namespace Mastermind
 
         private void validateButton_Click(object sender, RoutedEventArgs e)
         {
+            Title = $"Mastermind - {players[currentPlayerIndex]} - Poging {attempts} van {maxAttempts}";
+
             // Verkrijg de geselecteerde kleuren van de comboboxen
             string selectedColor1 = comboBox1.SelectedItem?.ToString();
             string selectedColor2 = comboBox2.SelectedItem?.ToString();
@@ -396,7 +402,7 @@ namespace Mastermind
             if (attemptCount >= maxAttempts)
             {
                 // Show a message when the player reaches the max attempts
-                MessageBox.Show($"Je hebt het maximale aantal pogingen bereikt. De geheime code was: {string.Join(", ", chosenColors)}");
+          
                 EndGame();
             }
         }
@@ -420,7 +426,7 @@ namespace Mastermind
         private void EndGame()
         {
             //speler zijn naam, score en attempts in de lijst toevoegen
-            highScores.Add(new Tuple<string, int, int>(playerName, score, attemptCount));
+            highScores.Add(new Tuple<string, int, int>(players[currentPlayerIndex], score, attemptCount));
 
             //Dit heb ik moeten opzoeken, ordered eerst door score (Item 2), als de score gelijk is dan ordered hij door attampts(Item 3)
             highScores = highScores.OrderByDescending(x => x.Item2).ThenBy(x => x.Item3).ToList();
@@ -430,17 +436,31 @@ namespace Mastermind
             {
                 highScores = highScores.Take(15).ToList();
             }
-            
-            
-            
-            
-            // Vraag de speler of hij opnieuw wil spelen
-            var result = MessageBox.Show("Wil je opnieuw spelen?", "Spel beëindigen", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
+            string nextPlayer = (currentPlayerIndex + 1 < players.Count) ? players[currentPlayerIndex + 1] : "Geen spelers meer";
+
+            MessageBox.Show($"Je hebt gefaald. De geheime code was: {string.Join(", ", chosenColors)}\n" +
+                    $"De volgende speler is: {nextPlayer}",
+                    $"{players[currentPlayerIndex]}", MessageBoxButton.OK);
+
+            currentPlayerIndex++;
+
+            if(currentPlayerIndex >= players.Count)
             {
-                // Nieuwe code genereren en het spel resetten
-                GenerateNewCode();  
-                ResetGame();        
+                var result = MessageBox.Show("Wil je opnieuw spelen?", "Spel beëindigen", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    // Nieuwe code genereren en het spel resetten
+                    GenerateNewCode();
+                    ResetGame();
+                    currentPlayerIndex = 0;
+                }
+
+            }
+            else
+            {
+                
+                MessageBox.Show($"Het is de beurt van {players[currentPlayerIndex]}", "Volgende Speler", MessageBoxButton.OK);
+                ResetGame();
             }
             
         }
@@ -460,7 +480,7 @@ namespace Mastermind
             comboBox3.SelectedItem = null;
             comboBox4.SelectedItem = null;
 
-            Title = $"Mastermind - Poging {attempts} van {maxAttempts}";
+            
         }
         //private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         //{
