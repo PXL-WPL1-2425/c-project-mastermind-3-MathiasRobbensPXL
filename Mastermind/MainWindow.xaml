@@ -17,7 +17,7 @@
             <MenuItem Header="Settings">
                 <MenuItem Name="MnuAttempts" Header="Attempts Amount" Click="MnuAttempts_Click"></MenuItem>
             </MenuItem>
-            
+
         </Menu>
         <ComboBox Name="comboBox1" HorizontalAlignment="Left" Margin="61,75,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ComboBox_SelectionChanged"/>
         <ComboBox Name="comboBox2" HorizontalAlignment="Left" Margin="245,75,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ComboBox_SelectionChanged"/>
@@ -33,6 +33,7 @@
         <ListBox Name="attemptsListBox" Margin="242,303,242,0"/>
         <Label Name="scoreLabel" Content="Score: 100" HorizontalAlignment="Left" Margin="613,269,0,0" VerticalAlignment="Top" Width="142"/>
         <Button Name="hintButton" Content="Hint" HorizontalAlignment="Left" Margin="613,303,0,0" VerticalAlignment="Top" Width="71" Click="hintButton_Click"/>
+        <Label Name="tooltipLabel" Content="" HorizontalAlignment="Left" Margin="569,0,0,0" VerticalAlignment="Center" Height="102" Width="219"/>
 
     </Grid>
 </Window>

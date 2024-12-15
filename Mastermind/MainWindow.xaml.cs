@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Reflection.Emit;
+using System.Security.Policy;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -71,6 +72,9 @@ namespace Mastermind
             RandomColors();
 
             this.KeyDown += new KeyEventHandler(MainWindow_KeyDown);
+
+            tooltipLabel.Content = $"Witte rand: Juiste kleur, foute positien \nRode rand: Juiste kleur, juiste positie \nGeen kleur: Foute kleur ";
+
         }
         private void StartGame()
         {
@@ -326,6 +330,8 @@ namespace Mastermind
                     colorBorder.BorderBrush = new SolidColorBrush(Colors.DarkRed);  // Rood voor correct
                     redCount++;
                     tempChosenColors[i] = ""; // Verwijder de correct geraden kleur uit de lijst
+
+                    colorBorder.ToolTip = "Juiste kleur, juiste positie";
                 }
                 else if (chosenColors.Contains(selectedColors[i])) // Kleur is aanwezig, maar op de verkeerde plaats
                 {
@@ -338,12 +344,14 @@ namespace Mastermind
                     {
                         tempChosenColors[tempIndex] = ""; // Verwijder de kleur uit de lijst
                     }
+                    colorBorder.ToolTip = "Juiste kleur, foute positie";
                 }
 
                 else
                 {
                     // Kleur die helemaal niet voorkomt krijgt geen border (optioneel)
                     colorBorder.BorderBrush = new SolidColorBrush(Colors.Transparent);
+                    colorBorder.ToolTip = "Foute kleur";
                 }
             }
 
@@ -424,48 +432,46 @@ namespace Mastermind
 
 
 
-        // Eindig het spel en vraag of de speler opnieuw wil spelen
+        
         private void EndGame()
         {
-            //speler zijn naam, score en attempts in de lijst toevoegen
-            highScores.Add(new Tuple<string, int, int>(players[currentPlayerIndex], score, attemptCount));
-
-            //Dit heb ik moeten opzoeken, ordered eerst door score (Item 2), als de score gelijk is dan ordered hij door attampts(Item 3)
-            highScores = highScores.OrderByDescending(x => x.Item2).ThenBy(x => x.Item3).ToList();
-           
-            //alleen de top 15 scores bijhouden
-            if(highScores.Count > 15)
+            if (players.Count > 0)
             {
-                highScores = highScores.Take(15).ToList();
-            }
-            string nextPlayer = (currentPlayerIndex + 1 < players.Count) ? players[currentPlayerIndex + 1] : "Geen spelers meer";
-
-            MessageBox.Show($"Je hebt gefaald. De geheime code was: {string.Join(", ", chosenColors)}\n" +
-                    $"De volgende speler is: {nextPlayer}",
-                    $"{players[currentPlayerIndex]}", MessageBoxButton.OK);
-
-            currentPlayerIndex++;
-
-            if(currentPlayerIndex >= players.Count)
-            {
-                var result = MessageBox.Show("Wil je opnieuw spelen?", "Spel beëindigen", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.Yes)
-                {
-                    // Nieuwe code genereren en het spel resetten
-                    GenerateNewCode();
-                    ResetGame();
-                    currentPlayerIndex = 0;
+               
+                if (currentPlayerIndex >= 0 && currentPlayerIndex < players.Count)
+                {  
+                    highScores.Add(new Tuple<string, int, int>(players[currentPlayerIndex], score, attemptCount));
                 }
-
+                else
+                {
+                    MessageBox.Show("Fout bij het toevoegen van score. Ongeldige speler index.");
+                }
             }
             else
             {
-                Title = $"Mastermind - {players[currentPlayerIndex]} - Poging {attempts} van {maxAttempts}";
-                MessageBox.Show($"Het is de beurt van {players[currentPlayerIndex]}", "Volgende Speler", MessageBoxButton.OK);
+                MessageBox.Show("Er zijn geen spelers om scores aan toe te voegen.");
+            }
+
+            //Order highscore op score, score hetzelfde dan order op attempts
+            highScores = highScores.OrderByDescending(x => x.Item2).ThenBy(x => x.Item3).ToList();
+
+            
+            if (highScores.Count > 15)
+            {
+                highScores = highScores.Take(15).ToList();
+            }
+
+            var result = MessageBox.Show("Wil je opnieuw spelen?", "Spel beëindigen", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                
+                GenerateNewCode();
                 ResetGame();
             }
-            
         }
+
+
+        
 
        
         private void ResetGame()
@@ -482,7 +488,7 @@ namespace Mastermind
             comboBox3.SelectedItem = null;
             comboBox4.SelectedItem = null;
 
-            
+            currentPlayerIndex = 0;
         }
         //private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         //{
@@ -646,8 +652,6 @@ namespace Mastermind
 
             return $"Positie {randomIndex + 1}: {chosenColors[randomIndex]}"; 
         }
-
-
     }
 }
 
